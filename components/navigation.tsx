@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { Locale } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -19,6 +19,7 @@ const localeNames = {
 export function Navigation({ lang, t }: { lang: Locale; t: any }) {
   const [isOpen, setIsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [mobileLangOpen, setMobileLangOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
 
   return (
@@ -63,6 +64,7 @@ export function Navigation({ lang, t }: { lang: Locale; t: any }) {
                 onClick={() => setLangOpen(!langOpen)}
                 className="flex items-center gap-1 text-sm font-medium text-neutral-700 hover:text-primary transition-colors"
               >
+                <Globe className="h-4 w-4" />
                 {localeNames[lang]}
                 <ChevronDown className="h-4 w-4" />
               </button>
@@ -121,16 +123,34 @@ export function Navigation({ lang, t }: { lang: Locale; t: any }) {
             <a href="#faq" className="block text-neutral-700 font-medium" onClick={() => setIsOpen(false)}>
               {t.nav_faq}
             </a>
-            <div className="flex flex-wrap gap-2 pt-2">
-              {Object.entries(localeNames).map(([locale, name]) => (
-                <Link
-                  key={locale}
-                  href={`/${locale}`}
-                  className="text-sm text-neutral-600 hover:text-primary"
-                >
-                  {name}
-                </Link>
-              ))}
+            <div className="pt-2 border-t border-neutral-200">
+              <button
+                onClick={() => setMobileLangOpen(!mobileLangOpen)}
+                className="flex items-center justify-between w-full py-2 text-neutral-700 font-medium"
+              >
+                <span className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  {localeNames[lang]}
+                </span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${mobileLangOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mobileLangOpen && (
+                <div className="mt-2 space-y-2 pl-4 pb-2">
+                  {Object.entries(localeNames).map(([locale, name]) => (
+                    <Link
+                      key={locale}
+                      href={`/${locale}`}
+                      className={`block text-sm ${locale === lang ? 'text-primary font-medium' : 'text-neutral-600 hover:text-primary'}`}
+                      onClick={() => {
+                        setIsOpen(false);
+                        setMobileLangOpen(false);
+                      }}
+                    >
+                      {name}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
             {(lang === 'ko' || lang === 'en' || lang === 'ru') ? (
               <Button
